@@ -1,0 +1,25 @@
+body{
+    background-color:lightgrey;
+}
+div{
+    width: 1000px;
+}
+#ground{
+    width: 1000px;
+    left: 10%;
+    top: 2%;
+    position:absolute;
+}
+#banner{
+    height: 80px;
+    background: midnightblue;
+}
+
+#codeFrame{
+    height: 500px;
+    background: green;
+}
+#footer{
+    height: 50px;
+    background: gray;
+}
