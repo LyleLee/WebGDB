@@ -1,0 +1,15 @@
+//
+   Created by lyle on 3/25/14.
+
+extends mylaout
+
+
+block content
+    div#ground
+        div#banner
+        div#codeFrame
+        div#footer
+            form(action="/upfile",method = "post",id ="upload",enctype="multipart/form-data")
+                input(type = "file",name = "doupload")
+                input(type = "submit",value="upload")
+        div
