@@ -1,0 +1,21 @@
+//
+   Created by lyle on 14-4-1.
+extends mainLayout
+
+block content
+    div#banner
+    div#allMessage.firstDiv
+        p#firstLine welcome !
+    div#inputBox
+        form(action="#",id ="sendMessage")
+            input(type="textarea",id="inputMessage",value="your message here")
+            input(type="submit",id="bu",value="send")
+            input(type="button",id="clear",value="clear")
+    div#footer
+            strong#connectMessage
+            |  there are :
+            strong#counter
+            |  fellows online. thank you for login !
+
+
+    script(src ='/javascripts/chat_client.js')

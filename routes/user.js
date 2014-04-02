@@ -18,7 +18,9 @@ exports.postFile = function(req, res)
     res.send("done");
 };
 
-exports.week = function(req,res)
+/*聊天程序开始*/
+exports.chat = function(req,res)
 {
-    res.sendfile('')
-}
+    //res.sendfile('/html/index.html');
+    res.render('chat');
+};

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Socket.IO Example</title>
+  </head>
+  <body>
+    <h1>Socket.IO Example</h1>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io.connect('http://127.0.0.1:3000');
+	socket.on('connetedmess',function(data)	{
+		alert(data.text);
+	});
+
+	socket.on('count',function(thisData){
+		var counter = document.getElementById('counter');
+		counter.innerHTML = thisData.what+" "+thisData.num;
+	});
+
+    </script>
+	<div>
+		<p>now has client :</div>
+		<p id = "counter">0</p>
+	</div>
+
+  </body>
+</html>

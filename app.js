@@ -11,10 +11,15 @@ var path = require('path');
 
 var app = express();
 
+/*add by Lyle*/
+
+/*end*/
+
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+/*下面这一行非常重要,并且要放在*/
 app.use(express.bodyParser({ uploadDir: "./public/upload/" }));
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -23,21 +28,24 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
-/*add by loudyten*/
-
-
 
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-//app.get('/', routes.index);
 app.get('/users', user.list);
 app.post('/upfile',user.postFile);
 app.get('/',user.sendStaticFile);
-app.get('week',user.week);
-http.createServer(app).listen(app.get('port'), function(){
+app.get('/chat',user.chat);
+
+httpApp = http.createServer(app);
+httpApp.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+
+var work = require('work');//在node_module中的模块不需要添加路径,除此之外需要添加
+work.begin(httpApp);
 
