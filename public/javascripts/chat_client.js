@@ -3,11 +3,16 @@
  */
 
 /**/
+function resize()
+{
+    var div = document.getElementById('allMessage');
+    div.scrollTop=div.scrollHeight;
+}
 function getMyDate()
 {
     var today = new Date();
     return today.toDateString()+today.toTimeString();
-}
+};
 $(document).ready(function()
 {
     var socket = io.connect("http://127.0.0.1:3000/");
@@ -27,7 +32,7 @@ $(document).ready(function()
     {
         $("#allMessage").append("<p>"+getMyDate()+":\t\t"+data.text+"</p>");
         //滚动条到底部
-        $("#allMessage").scrollTop = $("#allMessage").scrollHeight;
+        resize();
     });
 
     $("#bu").click(function()
@@ -36,7 +41,8 @@ $(document).ready(function()
         socket.emit('sendMessage',{text:str});
         //$("#firstLine").before("<p>"+getMyDate()+":\t\t"+str+"</p>");
         $("#allMessage").append("<p>"+getMyDate()+":\t\t"+str+"</p>");
-        $("#allMessage").scrollTop = $("#allMessage").scrollHeight;
+
+        resize();
         return false;
     });
 
