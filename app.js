@@ -11,15 +11,14 @@ var path = require('path');
 
 var app = express();
 
-/*add by Lyle*/
-
-/*end*/
 
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
 /*下面这一行非常重要,并且要放在*/
+
 app.use(express.bodyParser({ uploadDir: "./public/upload/" }));
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -29,10 +28,12 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
+
 
 app.get('/users', user.list);
 app.post('/upfile',user.postFile);
@@ -48,4 +49,3 @@ httpApp.listen(app.get('port'), function(){
 
 var work = require('work');//在node_module中的模块不需要添加路径,除此之外需要添加
 work.begin(httpApp);
-

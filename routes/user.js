@@ -18,9 +18,10 @@ exports.postFile = function(req, res)
     res.send("done");
 };
 
-/*聊天程序开始*/
+
 exports.chat = function(req,res)
 {
     //res.sendfile('/html/index.html');
     res.render('chat');
 };
+
