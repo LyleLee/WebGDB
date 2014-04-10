@@ -25,3 +25,12 @@ exports.chat = function(req,res)
     res.render('chat');
 };
 
+exports.compiler= function(req,res)
+{
+    res.sendfile('compiler.html',{'root': '/home/lyle/WebstormProjects/web4/public/html/'});
+};
+
+exports.test = function(req,res)
+{
+    res.sendfile('test.html',{'root': '/home/lyle/WebstormProjects/web4/public/html/'});
+};

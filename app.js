@@ -19,7 +19,7 @@ app.set('view engine', 'jade');
 
 /*下面这一行非常重要,并且要放在*/
 
-app.use(express.bodyParser({ uploadDir: "./public/upload/" }));
+//app.use(express.bodyParser({ uploadDir: "./public/upload/" }));
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -37,8 +37,10 @@ if ('development' == app.get('env')) {
 
 app.get('/users', user.list);
 app.post('/upfile',user.postFile);
-app.get('/',user.sendStaticFile);
+app.get('/',user.compiler);
 app.get('/chat',user.chat);
+app.get('/test',user.test);
+
 
 httpApp = http.createServer(app);
 httpApp.listen(app.get('port'), function(){
@@ -47,5 +49,5 @@ httpApp.listen(app.get('port'), function(){
 
 
 
-var work = require('work');//在node_module中的模块不需要添加路径,除此之外需要添加
+var work = require('work');//在node_module中的模块(包)不需要添加路径,除此之外需要添加
 work.begin(httpApp);
