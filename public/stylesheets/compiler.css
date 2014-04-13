@@ -1,0 +1,50 @@
+body{
+    background-color:lightgrey;
+}
+#holder{
+    margin-top: 100px;
+}
+.img-responsive {
+    display: inline-block;
+    height: 25px;
+    max-width: 100%;
+}
+#leftSide{
+    background-color: darkgray;
+    margin: 90px 0px 10px 40px;
+    float: left;
+}
+#historyCommand{
+    height: 400px;
+    width: 350px;
+}
+
+#codeDiv
+{
+    margin: 90px 10px 10px 10px;
+    height: 550px;
+    width: 930px;
+    float: right;
+}
+.clear
+{
+    overflow: auto;
+}
+#messageWindow
+{
+    height: 300px;
+    overflow: auto;
+}
+.redFont{
+    color: red;
+}
+.greenFont{
+    color: green;
+}
+.CodeMirror {
+    height: auto;
+}
+.CodeMirror-scroll {
+    overflow-y: hidden;
+    overflow-x: auto;
+}

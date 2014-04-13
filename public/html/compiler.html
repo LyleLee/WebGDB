@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>debuger 1.0.0</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <link href="/codemirror/lib/codemirror.css" rel="stylesheet">
+
+    <script src="/codemirror/lib/codemirror.js"></script>
+    <script src="/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="/codemirror/mode/clike/clike.js"></script>
+
+    <link href="/stylesheets/compiler.css" rel="stylesheet" media="screen">
+
+</head>
+<body id="ground">
+<!--导航条-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <ul class="nav navbar-nav">
+            <li><a href="#" class="navbar-brand"><img class="img-responsive" src="/images/logo.jpg"></a></li>
+            <li class="active"><a href="#">Home</a></li>
+            <li id="compileCode"><a href="#">编译代码</a></li>
+            <li><a href="#">开始调试</a></li>
+            <li><a href="#">下一步</a></li>
+            <li><a href="#">执行到断点</a></li>
+            <li><a href="#">停止调试</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Social<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li class="socials">a</li>
+                    <li class="socials">b</li>
+                    <li class="socials">c</li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+<!--左边命令窗口-->
+    <div>
+        <div id="leftSide">
+            <div id="historyCommand" class="clear"></div>
+            <div id="command">
+              <form>
+                  <input type="textarea" id="commandWindow" disabled="true">
+                  <input type="button" id="executeCommand" value="execute">
+                  <input type="reset">
+              </form>
+            </div>
+        </div>
+
+<!--右边代码区域-->
+        <div id="codeDiv">
+            <textarea id="c-code">
+
+/*************************************************************************
+> File Name: hello.c
+> Author: Lyle
+> Mail: lixianfayx@163.com
+> Created Time: 2014年04月10日 星期四 21时24分45秒
+************************************************************************/
+
+#include<stdio.h>
+int main()
+{
+  printf("hello word");
+  return 0;
+}
+            </textarea>
+            <div id="messageWindow" class="clear"></div>
+        </div>
+    </div>
+<!--script-->
+
+<script src="/javascripts/jquery-2.1.0.min.js"></script>
+<script src="/javascripts/bootstrap.min.js"></script>
+<script src='/socket.io/socket.io.js'></script>
+<script src="/javascripts/loadCodeEditor.js"></script>
+
+<script src="/javascripts/behavior.js"></script>
+<script src="/javascripts/myevent.js"></script>
+</body>
+</html>

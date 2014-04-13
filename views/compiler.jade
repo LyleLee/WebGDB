@@ -1,0 +1,17 @@
+//
+   Created by lyle on 14-4-10.
+
+extends mainLayout
+block content
+    h1 开始在这个页面调试一个程序
+    div.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
+        div.nav-collapse(style="height: auto;")
+            ul.nav.navbar-nav
+                li.active: a(href="#") Home
+                li: a(href="#") 编译代码
+                li: a(href="#") 开始调试
+                li: a(href="#") 停止调试
+                li: a(href="#") 下一步
+    script(src="/javascripts/jquery-2.1.0.min.js")
+    script(src="/javascripts/bootstrap.min.js")
+    script(src = '/socket.io/socket.io.js')

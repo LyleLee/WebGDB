@@ -26,10 +26,9 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-// development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
@@ -50,4 +49,5 @@ httpApp.listen(app.get('port'), function(){
 
 
 var work = require('work');//在node_module中的模块(包)不需要添加路径,除此之外需要添加
-work.begin(httpApp);
+//work.begin(httpApp);
+work.onService(httpApp);

@@ -38,6 +38,7 @@ $(document).ready(function()
     $("#bu").click(function()
     {
         var str = $("#inputMessage").val();
+        alert(str.length);
         socket.emit('sendMessage',{text:str});
         //$("#firstLine").before("<p>"+getMyDate()+":\t\t"+str+"</p>");
         $("#allMessage").append("<p>"+getMyDate()+":\t\t"+str+"</p>");
@@ -49,7 +50,6 @@ $(document).ready(function()
     $("#clear").click(function()
     {
         $("#allMessage").html("<p></p>");
-
     });
 });
 
