@@ -19,9 +19,10 @@
 <!--导航条-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <ul class="nav navbar-nav">
-            <li><a href="#" class="navbar-brand"><img class="img-responsive" src="/images/logo.jpg"></a></li>
-            <li class="active"><a href="#">Home</a></li>
+            <li id="bull"><a href="#" class="navbar-brand"><img class="img-responsive" src="/images/logo.jpg"></a></li>
+            <li id="home" class="active"><a href="#">Home</a></li>
             <li id="compileCode"><a href="#">编译代码</a></li>
+            <li id="executeCode"><a href="#">执行代码</a></li>
             <li><a href="#">开始调试</a></li>
             <li><a href="#">下一步</a></li>
             <li><a href="#">执行到断点</a></li>
@@ -41,9 +42,9 @@
         <div id="leftSide">
             <div id="historyCommand" class="clear"></div>
             <div id="command">
-              <form>
+              <form action="#">
                   <input type="textarea" id="commandWindow" disabled="true">
-                  <input type="button" id="executeCommand" value="execute">
+                  <input type="submit" id="executeCommand" value="execute">
                   <input type="reset">
               </form>
             </div>
@@ -52,20 +53,6 @@
 <!--右边代码区域-->
         <div id="codeDiv">
             <textarea id="c-code">
-
-/*************************************************************************
-> File Name: hello.c
-> Author: Lyle
-> Mail: lixianfayx@163.com
-> Created Time: 2014年04月10日 星期四 21时24分45秒
-************************************************************************/
-
-#include<stdio.h>
-int main()
-{
-  printf("hello word");
-  return 0;
-}
             </textarea>
             <div id="messageWindow" class="clear"></div>
         </div>

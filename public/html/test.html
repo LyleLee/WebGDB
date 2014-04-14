@@ -4,25 +4,29 @@
     <title>测试新特性</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/stylesheets/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="/codemirror/lib/codemirror.css" rel="stylesheet" media="screen">
 
-    <link rel="stylesheet" href="/CodeMirror/lib/util/simple-hint.css">
+    <link href="/codemirror/lib/codemirror.css" rel="stylesheet">
+
+    <script src="/codemirror/lib/codemirror.js"></script>
+    <script src="/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="/codemirror/mode/clike/clike.js"></script>
+
+    <link href="/stylesheets/compiler.css" rel="stylesheet" media="screen">
+
 </head>
 <body>
 
 <div>
-    <textarea id="codeArea">dsd</textarea>
-</div>>
+    <p id="codeArea" style="height: 400px; width: 500px">ddddddddd</p>
+</div>
 
-    <script src="/javascripts/jquery-2.1.0.min.js"></script>
-    <script src="/javascripts/bootstrap.min.js"></script>
-    <script src='/socket.io/socket.io.js'></script>
+<script src="/javascripts/jquery-2.1.0.min.js"></script>
+<script src="/javascripts/bootstrap.min.js"></script>
+<script src='/socket.io/socket.io.js'></script>
+<script src="/javascripts/loadCodeEditor.js"></script>
 
+<script src="/javascripts/behavior.js"></script>
+<script src="/javascripts/myevent.js"></script>
 
-<script src="/codeMirror/lib/codemirror.js"></script>
-<script src="/codeMirror/lib/util/simple-hint.js"></script>
-<script src="/codeMirror/lib/util/javascript-hint.js"></script>
-<script src="/codeMirror/mode/javascript/javascript.js"></script>
-　　
 </body>
 </html>

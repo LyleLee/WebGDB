@@ -26,6 +26,7 @@ body{
     width: 930px;
     float: right;
 }
+
 .clear
 {
     overflow: auto;
@@ -41,8 +42,19 @@ body{
 .greenFont{
     color: green;
 }
+.pMargin
+{
+    margin-bottom: 3px;
+}
+pre{
+    margin: 0px;
+    padding: 1px;
+}
+.breakpoints {width: .8em;}
+.breakpoint { color: #822; }
 .CodeMirror {
     height: auto;
+    border: 1px solid #aaa;
 }
 .CodeMirror-scroll {
     overflow-y: hidden;

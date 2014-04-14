@@ -44,13 +44,27 @@ function clearWindow(divId)
     $(div).html("<p></p>");
 };
 
+/*在编译, 以及调试的时候,经常会有说你的某个文件...但是对于用户来说, 没有必要知道在服务器中的具体路径*/
+function replaceFileName(str){
+    str = str.replace(/\/home\/lyle\/WebstormProjects\/web4\/hello.c./g,"");
+    str = str.replace(/\/home\/lyle\/WebstormProjects\/web4\/a.out/,"");
+    return str;
+};
+
+function appendCommand(oneCommand)
+{
+    $("#historyCommand").append($("<p>"+oneCommand+"</p>"));
+    resizeWindow("historyCommand");
+};
 function appendMessage(type,message)
 {
     /*type 0是错误, 1是一般信息, 2是服务器成功执行编译或者调试命令的信息*/
-    var $line = $("<p>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+message+"</p>");
+    var $lineParent = $("<p></p>");
+    $lineParent.addClass("pMargin");
+    var $lineChild = $("<pre>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+message+"</pre>");
     if(type == 0)
     {
-        $line.addClass('redFont');
+        $lineChild.addClass('redFont');
     }
     else if(type == 1)
     {
@@ -58,9 +72,10 @@ function appendMessage(type,message)
     }
     else if(type == 2)
     {
-        $line.addClass('greenFont');
+        $lineChild.addClass('greenFont');
     }
-    $("#messageWindow").append($line);
+    $lineParent.append($lineChild);
+    $("#messageWindow").append($lineParent);
     resizeWindow('messageWindow');
 };
 
@@ -68,6 +83,41 @@ function enableCommandWindow()
 {
     $("#commandWindow").attr('disabled',false);//http://www.w3school.com.cn/jquery/attributes_attr.asp
 };
+
+
+function makeMarker() {
+    var marker = document.createElement("div");
+    marker.style.color = "#822";
+    marker.innerHTML = "●";
+    return marker;
+};
+
+/*代码编辑器添加监听断点的事件*/
+function addBreakpointsListener()
+{
+    cEditor.on("gutterClick", function(cm, n) {
+        //alert(n); //是n+1代表实际的行号
+        var info = cm.lineInfo(n);
+        var op =null;
+        if(info.gutterMarkers)
+        {
+            /*已经是断点了,就要取消*/
+            /*在gdb中删除断点是这样完成的:
+            *clear /home/lyle/WebstormProjects/web4/hello.c:11
+            * */
+            op = null;
+            socket.emit('command',{com:"clear /home/lyle/WebstormProjects/web4/hello.c"+(n+1)});
+        }
+        else
+        {
+            /*还不是断点,就要添加*/
+            op = makeMarker();
+            socket.emit('command',{com:"break "+(n+1)});
+        }
+        cm.setGutterMarker(n, "breakpoints", op);
+    });
+}
+
 
 var step = 1;//1是未编译代码. 2是编译已经完成, 可以进行调试
 
@@ -79,14 +129,6 @@ $(document).ready(function()
         appendMessage(1,"服务器已经接收代码");
     });
 
-    /*编译代码*/
-    $("nav ul li:eq(2)").click(function()//eq()是从0开始计数的
-    {
-        var code = cEditor.getValue();
-        socket.emit('code',{code:code});//发送的是一个对象,这个对象有一个成员叫做code
-
-    });
-
     socket.on('codeCompileSuccess',function(data)
     {
         appendMessage(2,"服务器编译代码成功");
@@ -95,14 +137,38 @@ $(document).ready(function()
 
     socket.on('codeCompileFail',function(data)//data是对象,
     {
+        var temp = replaceFileName(data.gccOutPut);
         appendMessage(0,"服务器编译代码失败");
-        appendMessage(0,data.gccOutPut);
+        appendMessage(0,temp);
         step = 1;
     });
 
 
-    /*点击开始调试菜单*/
+    /*编译代码*/
+    $("nav ul li:eq(2)").click(function()//eq()是从0开始计数的
+    {
+        var code = cEditor.getValue();
+        socket.emit('code',{code:code});//发送的是一个对象,这个对象有一个成员叫做code
+    });
+    /*不调试,直接执行*/
     $("nav ul li:eq(3)").click(function()//eq()是从0开始计数的
+    {
+        /*还没有编译*/
+        if(step == 1)
+        {
+            appendMessage(1,"还没有编译代码, 请编译后再执行");
+            return false;
+        }
+        else if(step == 2)
+        {
+            socket.emit('runProgram');
+            socket.on('runEnd',function(result){
+                appendMessage(1,result.runResult);
+            });
+        }
+    });
+    /*点击开始调试菜单*/
+    $("nav ul li:eq(4)").click(function()//eq()是从0开始计数的
     {
         /*还没有编译*/
         if(step == 1)
@@ -113,7 +179,30 @@ $(document).ready(function()
         else if(step == 2)
         {
             enableCommandWindow();
+            socket.emit('debug');
+            addBreakpointsListener();
         }
+    });
+
+
+    /*下一步*/
+    $('nav ul li:eq(5)').click(function()
+    {
+        alert("下一步");
+        socket.emit('command',{com:"next"});
+    });
+
+    /*执行到断点*/
+    $('nav ul li:eq(6)').click(function()
+    {
+        alert("继续执行");
+        socket.emit("command",{com:"continue"});
+    });
+
+    /*停止调试*/
+    $('nav ul li:eq(7)').click(function()
+    {
+        socket.emit('stop',{com:"quit"});
     });
 
     /*获取输入命令,传到服务器*/
@@ -122,19 +211,21 @@ $(document).ready(function()
         var com = $("#commandWindow").val();
         if(com.length >0)
         {
+            //alert(com);
             socket.emit('command',{com:com});
+            appendCommand(com);
         }
     });
 
     /*执行命令出错*/
     socket.on('executeError',function(result)
     {
-        appendMessage(0,result.commandResult);
+        appendMessage(0,replaceFileName(result.commandResult));
     });
 
     /*正常执行命令*/
     socket.on('executeSuccess',function(result)
     {
-        appendMessage(2,result.commandResult);
+        appendMessage(2,replaceFileName(result.commandResult));
     });
 });
