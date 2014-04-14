@@ -46,6 +46,7 @@ function clearWindow(divId)
 
 function appendMessage(type,message)
 {
+    /*type 0是错误, 1是一般信息, 2是服务器成功执行编译或者调试命令的信息*/
     var $line = $("<p>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+message+"</p>");
     if(type == 0)
     {
@@ -65,10 +66,10 @@ function appendMessage(type,message)
 
 function enableCommandWindow()
 {
-    $("commandWindow").attr('disabled',false);//http://www.w3school.com.cn/jquery/attributes_attr.asp
+    $("#commandWindow").attr('disabled',false);//http://www.w3school.com.cn/jquery/attributes_attr.asp
 };
 
-var step = 1;
+var step = 1;//1是未编译代码. 2是编译已经完成, 可以进行调试
 
 $(document).ready(function()
 {
@@ -88,7 +89,7 @@ $(document).ready(function()
 
     socket.on('codeCompileSuccess',function(data)
     {
-        appendMessage(1,"服务器编译代码成功");
+        appendMessage(2,"服务器编译代码成功");
         step = 2;
     });
 
