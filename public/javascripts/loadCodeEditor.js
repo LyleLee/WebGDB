@@ -34,6 +34,8 @@ $("#c-code").html(code);
 var cEditor = CodeMirror.fromTextArea(document.getElementById("c-code"), {
     lineNumbers: true,
     matchBrackets: true,
+    styleActiveLine: true,
+    lineWrapping: true,
     mode: "text/x-csrc",
     gutters: ["CodeMirror-linenumbers", "breakpoints"]
 });

@@ -2,7 +2,7 @@ body{
     background-color:lightgrey;
 }
 #holder{
-    margin-top: 100px;
+    margin-top: 90px;
 }
 .img-responsive {
     display: inline-block;
@@ -11,7 +11,7 @@ body{
 }
 #leftSide{
     background-color: darkgray;
-    margin: 90px 0px 10px 40px;
+    margin: 80px 0px 10px 40px;
     float: left;
 }
 #historyCommand{
@@ -21,7 +21,7 @@ body{
 
 #codeDiv
 {
-    margin: 90px 10px 10px 10px;
+    margin: 80px 10px 10px 10px;
     height: 550px;
     width: 930px;
     float: right;
@@ -59,4 +59,8 @@ pre{
 .CodeMirror-scroll {
     overflow-y: hidden;
     overflow-x: auto;
+}
+.lineBackground
+{
+    background-color: #f5e107;
 }

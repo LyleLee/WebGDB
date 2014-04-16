@@ -26,10 +26,12 @@ Date.prototype.Format = function (fmt) { //author: meizz
     return fmt;
 }
 
+var currentLine = 0;
 
 var address = "http://127.0.0.1:3000/";
 /*sokect.io连接服务器*/
 var socket = io.connect(address);
+
 
 /*命令窗口和交互信息窗口需要重新移动滚动条到底部*/
 function resizeWindow(divId)
@@ -44,21 +46,52 @@ function clearWindow(divId)
     $(div).html("<p></p>");
 };
 
-/*在编译, 以及调试的时候,经常会有说你的某个文件...但是对于用户来说, 没有必要知道在服务器中的具体路径*/
-function replaceFileName(str){
-    str = str.replace(/\/home\/lyle\/WebstormProjects\/web4\/hello.c./g,"");
-    str = str.replace(/\/home\/lyle\/WebstormProjects\/web4\/a.out/,"");
-    return str;
-};
+
+
 
 function appendCommand(oneCommand)
 {
     $("#historyCommand").append($("<p>"+oneCommand+"</p>"));
     resizeWindow("historyCommand");
 };
+
+/*在编译, 以及调试的时候,经常会有说你的某个文件...但是对于用户来说, 没有必要知道在服务器中的具体路径*/
+/*在这里还要针对where命令的输出
+ * (gdb) where
+ * #0  main () at /home/lyle/WebstormProjects/web4/hello.c:10
+ * 得到当前的行号
+ * 这个办法还比较笨, 虽然可用,但是有待改进
+ * */
+function highlightAline(message)
+{
+     //#0  main () at /home/lyle/WebstormProjects/web4/hello.c:10
+    var matchWhere = message.match(/\#\d+  \w* \(\) at \/home\/lyle\/WebstormProjects\/web4\/hello.c\:\d+/g);
+    /*这里通过分析gdb的输出,判断是不是where命令的输出, 如果是,那么就得到了当前的行号*/
+
+    if(matchWhere !=null)
+    {
+        cEditor.removeLineClass(currentLine-1, 'background', 'lineBackground');//代码编辑器好像是从0开始的, 虽然外观上显示的是1
+        currentLine = parseInt(message.split(":")[1],10);
+        cEditor.addLineClass(currentLine-1, 'background', 'lineBackground');
+        //alert("currentLine"+currentLine);
+    }
+};
+
 function appendMessage(type,message)
 {
     /*type 0是错误, 1是一般信息, 2是服务器成功执行编译或者调试命令的信息*/
+    /*去除文件名*/
+    message = message.replace(/\/home\/lyle\/WebstormProjects\/web4\/hello.c./g,"");
+    message = message.replace(/\/home\/lyle\/WebstormProjects\/web4\/a.out/,"");
+
+    /*去除输出*/
+    //#0  main () at 14
+    if(message.match(/^\#\d+  \w* \(\) at \d+$/))
+        return;
+
+    /*可能还有其他字符串,就先去除再输出*/
+    message = message.replace(/^\#\d+  \w* \(\) at \d+$/,"");
+
     var $lineParent = $("<p></p>");
     $lineParent.addClass("pMargin");
     var $lineChild = $("<pre>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+message+"</pre>");
@@ -106,7 +139,7 @@ function addBreakpointsListener()
             *clear /home/lyle/WebstormProjects/web4/hello.c:11
             * */
             op = null;
-            socket.emit('command',{com:"clear /home/lyle/WebstormProjects/web4/hello.c"+(n+1)});
+            socket.emit('command',{com:"clear /home/lyle/WebstormProjects/web4/hello.c:"+(n+1)});
         }
         else
         {
@@ -124,6 +157,8 @@ var step = 1;//1是未编译代码. 2是编译已经完成, 可以进行调试
 $(document).ready(function()
 {
 
+    /*当前运行的行*/
+
     socket.on('codeReceive',function(data)
     {
         appendMessage(1,"服务器已经接收代码");
@@ -137,9 +172,8 @@ $(document).ready(function()
 
     socket.on('codeCompileFail',function(data)//data是对象,
     {
-        var temp = replaceFileName(data.gccOutPut);
         appendMessage(0,"服务器编译代码失败");
-        appendMessage(0,temp);
+        appendMessage(0,data.gccOutPut);
         step = 1;
     });
 
@@ -150,6 +184,7 @@ $(document).ready(function()
         var code = cEditor.getValue();
         socket.emit('code',{code:code});//发送的是一个对象,这个对象有一个成员叫做code
     });
+
     /*不调试,直接执行*/
     $("nav ul li:eq(3)").click(function()//eq()是从0开始计数的
     {
@@ -188,20 +223,19 @@ $(document).ready(function()
     /*下一步*/
     $('nav ul li:eq(5)').click(function()
     {
-        alert("下一步");
         socket.emit('command',{com:"next"});
     });
 
     /*执行到断点*/
     $('nav ul li:eq(6)').click(function()
     {
-        alert("继续执行");
         socket.emit("command",{com:"continue"});
     });
 
     /*停止调试*/
     $('nav ul li:eq(7)').click(function()
     {
+
         socket.emit('stop',{com:"quit"});
     });
 
@@ -220,12 +254,20 @@ $(document).ready(function()
     /*执行命令出错*/
     socket.on('executeError',function(result)
     {
-        appendMessage(0,replaceFileName(result.commandResult));
+        console.log("1**"+result.commandResult);
+        var cmr = result.commandResult;
+        console.log("2**"+cmr);
+        cmr = cmr.replace(/No stack.\n/g,"");
+        console.log("3**"+cmr+"**"+cmr.length);
+        if(cmr == "")
+            return;
+        appendMessage(0,cmr.replace(/No stack./g,""));
     });
 
     /*正常执行命令*/
     socket.on('executeSuccess',function(result)
     {
-        appendMessage(2,replaceFileName(result.commandResult));
+        highlightAline(result.commandResult);
+        appendMessage(2,result.commandResult);
     });
 });

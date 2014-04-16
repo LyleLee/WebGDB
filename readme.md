@@ -26,3 +26,6 @@ http://113.54.140.129:3000/
 http://stackoverflow.com/questions/16657288/gdb-how-to-check-current-line-number-during-debug
 http://stackoverflow.com/questions/15870233/can-codemirror-change-the-background-color-of-a-section-of-code
 http://codemirror.net/doc/manual.html#api_decoration
+
+finaly solve
+http://our.umbraco.org/forum/developers/extending-umbraco/42232-CodeMirror-Trying-to-highlight-a-line

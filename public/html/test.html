@@ -16,8 +16,22 @@
 </head>
 <body>
 
+<script type="text/javascript">
+var str = "#0  main () at /home/lyle/WebstormProjects/web4/hello.c:10";
+var str2= 
+var myMatch = str.match(/^\#\d+  \w* \(\) at \/home\/lyle\/WebstormProjects\/web4\/hello.c\:\d+$/g);
+var m2 = str.match(/\/homE\//);
+    document.write(myMatch+"<br />");
+    document.write(m2+"<br />");
+    document.write(parseInt(str.split(":")[1]));
+
+</script>
+
 <div>
+
+    <!--
     <p id="codeArea" style="height: 400px; width: 500px">ddddddddd</p>
+    -->
 </div>
 
 <script src="/javascripts/jquery-2.1.0.min.js"></script>
