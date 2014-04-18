@@ -73,7 +73,7 @@ function highlightAline(message)
         cEditor.removeLineClass(currentLine-1, 'background', 'lineBackground');//代码编辑器好像是从0开始的, 虽然外观上显示的是1
         currentLine = parseInt(message.split(":")[1],10);
         cEditor.addLineClass(currentLine-1, 'background', 'lineBackground');
-        //alert("currentLine"+currentLine);
+       //    alert("currentLine"+currentLine);
     }
 };
 
@@ -158,6 +158,12 @@ $(document).ready(function()
 {
 
     /*当前运行的行*/
+
+    /*点击图标和Home将恢复代码*/
+    $("nav ul li:lt(2)").click(function(e)//第一个元素
+    {
+
+    });
 
     socket.on('codeReceive',function(data)
     {
