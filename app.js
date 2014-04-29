@@ -47,7 +47,7 @@ httpApp.listen(app.get('port'), function(){
 });
 
 
-
+/*httpApp是一个http服务器*/
 var work = require('work');//在node_module中的模块(包)不需要添加路径,除此之外需要添加
 //work.begin(httpApp);
 work.onService(httpApp);

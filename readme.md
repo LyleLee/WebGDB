@@ -29,3 +29,10 @@ http://codemirror.net/doc/manual.html#api_decoration
 
 finaly solve
 http://our.umbraco.org/forum/developers/extending-umbraco/42232-CodeMirror-Trying-to-highlight-a-line
+
+
+怎么滚动到特定的行
+http://www.techques.com/question/1-10575343/CodeMirror---Is-it-possible-to-scroll-to-a-line-so-that-it-is-in-the-middle-of-window
+
+
+

@@ -5,24 +5,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/stylesheets/bootstrap.min.css" rel="stylesheet" media="screen">
-
     <link href="/codemirror/lib/codemirror.css" rel="stylesheet">
+    <link href="/stylesheets/compiler.css" rel="stylesheet" media="screen">
 
     <script src="/codemirror/lib/codemirror.js"></script>
     <script src="/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="/codemirror/mode/clike/clike.js"></script>
     <script src="/codemirror/addon/selection/active-line.js"></script>
 
-    <link href="/stylesheets/compiler.css" rel="stylesheet" media="screen">
 
 </head>
 <body id="ground">
 <!--导航条-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <ul class="nav navbar-nav">
-            <li id="bull"><a href="#" class="navbar-brand"><img class="img-responsive" src="/images/logo.jpg"></a></li>
+            <li><a href="#" class="navbar-brand"><img class="img-responsive" src="/images/logo.jpg"></a></li>
             <li id="home" class="active"><a href="#">Home</a></li>
-            <li id="compileCode"><a href="#">编译代码</a></li>
+            <li id="compileCode"><a href="#">保存代码</a></li>
             <li id="executeCode"><a href="#">执行代码</a></li>
             <li><a href="#">开始调试</a></li>
             <li><a href="#">下一步</a></li>
@@ -38,26 +37,28 @@
             </li>
         </ul>
     </nav>
-<!--左边命令窗口-->
-    <div>
-        <div id="leftSide">
-            <div id="historyCommand" class="clear"></div>
-            <div id="command">
-              <form action="#">
-                  <input type="textarea" id="commandWindow" disabled="true">
-                  <input type="submit" id="executeCommand" value="execute">
-                  <input type="reset">
-              </form>
-            </div>
-        </div>
 
-<!--右边代码区域-->
+<!--左边代码区域-->
         <div id="codeDiv">
-            <textarea id="c-code">
-            </textarea>
+            <textarea id="c-code"></textarea>
             <div id="messageWindow" class="clear"></div>
         </div>
     </div>
+
+
+<!--右边命令窗口-->
+<div>
+    <div id="rightSide">
+        <div id="historyCommand" class="clear"></div>
+        <div id="command">
+            <form action="#">
+                <input type="textarea" id="commandWindow" disabled="true">
+                <input type="submit" id="executeCommand" value="execute">
+                <input type="reset">
+            </form>
+        </div>
+    </div>
+
 <!--script-->
 
 <script src="/javascripts/jquery-2.1.0.min.js"></script>

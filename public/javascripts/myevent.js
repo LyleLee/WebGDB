@@ -64,7 +64,7 @@ function appendCommand(oneCommand)
  * */
 function highlightAline(message)
 {
-     //#0  main () at /home/lyle/WebstormProjects/web4/hello.c:10
+    //#0  main () at /home/lyle/WebstormProjects/web4/hello.c:10
     var matchWhere = message.match(/\#\d+  \w* \(\) at \/home\/lyle\/WebstormProjects\/web4\/hello.c\:\d+/g);
     /*这里通过分析gdb的输出,判断是不是where命令的输出, 如果是,那么就得到了当前的行号*/
 
@@ -73,48 +73,71 @@ function highlightAline(message)
         cEditor.removeLineClass(currentLine-1, 'background', 'lineBackground');//代码编辑器好像是从0开始的, 虽然外观上显示的是1
         currentLine = parseInt(message.split(":")[1],10);
         cEditor.addLineClass(currentLine-1, 'background', 'lineBackground');
-       //    alert("currentLine"+currentLine);
+        //    alert("currentLine"+currentLine);
     }
 };
 
-function appendMessage(type,message)
+/*负责输出服务器传回来的信息*/
+function appendMessage(status)
 {
-    /*type 0是错误, 1是一般信息, 2是服务器成功执行编译或者调试命令的信息*/
-    /*去除文件名*/
-    message = message.replace(/\/home\/lyle\/WebstormProjects\/web4\/hello.c./g,"");
-    message = message.replace(/\/home\/lyle\/WebstormProjects\/web4\/a.out/,"");
-
-    /*去除输出*/
-    //#0  main () at 14
-    if(message.match(/^\#\d+  \w* \(\) at \d+$/))
-        return;
-
-    /*可能还有其他字符串,就先去除再输出*/
-    message = message.replace(/^\#\d+  \w* \(\) at \d+$/,"");
 
     var $lineParent = $("<p></p>");
     $lineParent.addClass("pMargin");
-    var $lineChild = $("<pre>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+message+"</pre>");
-    if(type == 0)
-    {
-        $lineChild.addClass('redFont');
-    }
-    else if(type == 1)
-    {
 
-    }
-    else if(type == 2)
+    var lineString = "";
+   // var $lineChild = $("<pre>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+lineString+"</pre>");
+    var $linePre = $("<pre></pre>");
+    if(status.index == 0)
     {
-        $lineChild.addClass('greenFont');
+        lineString = status.detailString;
+        $linePre.addClass('redFont');
     }
-    $lineParent.append($lineChild);
+    else if(status.index == 1)
+    {
+        lineString = status.detailString;
+        $linePre.addClass('greenFont');
+    }
+    else if(status.index == 2)
+    {
+        lineString = status.detailString;
+        $linePre.addClass('greenFont');
+    }
+    else if(status.index == 3)
+    {
+        lineString = status.detailString;
+        lineString += status.gccOutput;
+        $linePre.addClass('redFont');
+    }
+    else if(status.index == 4)
+    {
+        lineString = status.gdbOutput;
+        $linePre.addClass('blueFont');
+    }
+    else if(status.index == 5)
+    {
+        lineString = status.gdbOutput;
+        $linePre.addClass('redFont');
+    }
+    else if(status.index == 6)
+    {
+       alert("没有定义");
+    }
+    else if(status.index == 7)
+    {
+        lineString = status.runResult;
+        $linePre.addClass('greenFont');
+    }
+    lineString = (new Date()).Format("yyyy-MM-dd hh:mm:ss") +" :"+lineString;
+    $linePre.text(lineString);
+    $lineParent.append($linePre);
     $("#messageWindow").append($lineParent);
     resizeWindow('messageWindow');
 };
 
 function enableCommandWindow()
 {
-    $("#commandWindow").attr('disabled',false);//http://www.w3school.com.cn/jquery/attributes_attr.asp
+    $("#commandWindow").attr('disabled',false);
+    //http://www.w3school.com.cn/jquery/attributes_attr.asp
 };
 
 
@@ -136,144 +159,105 @@ function addBreakpointsListener()
         {
             /*已经是断点了,就要取消*/
             /*在gdb中删除断点是这样完成的:
-            *clear /home/lyle/WebstormProjects/web4/hello.c:11
-            * */
+             *clear /home/lyle/WebstormProjects/web4/hello.c:11
+             * */
             op = null;
-            socket.emit('command',{com:"clear /home/lyle/WebstormProjects/web4/hello.c:"+(n+1)});
+            var debug= {};
+            debug.command = "clear /home/lyle/WebstormProjects/web4/hello.c:"+(n+1);
+            socket.emit('debug',debug);
         }
         else
         {
             /*还不是断点,就要添加*/
             op = makeMarker();
-            socket.emit('command',{com:"break "+(n+1)});
+            var debug= {};
+            debug.command = "break "+(n+1);
+            socket.emit('debug',debug);
         }
         cm.setGutterMarker(n, "breakpoints", op);
     });
 }
 
-
-var step = 1;//1是未编译代码. 2是编译已经完成, 可以进行调试
-
 $(document).ready(function()
 {
 
-    /*当前运行的行*/
-
-    /*点击图标和Home将恢复代码*/
-    $("nav ul li:lt(2)").click(function(e)//第一个元素
-    {
-
+    socket.on('status',function(status){
+        console.log(status);
+        appendMessage(status);
     });
 
-    socket.on('codeReceive',function(data)
-    {
-        appendMessage(1,"服务器已经接收代码");
-    });
-
-    socket.on('codeCompileSuccess',function(data)
-    {
-        appendMessage(2,"服务器编译代码成功");
-        step = 2;
-    });
-
-    socket.on('codeCompileFail',function(data)//data是对象,
-    {
-        appendMessage(0,"服务器编译代码失败");
-        appendMessage(0,data.gccOutPut);
-        step = 1;
-    });
-
-
-    /*编译代码*/
     $("nav ul li:eq(2)").click(function()//eq()是从0开始计数的
     {
-        var code = cEditor.getValue();
-        socket.emit('code',{code:code});//发送的是一个对象,这个对象有一个成员叫做code
+        var c_code = cEditor.getValue();
+        var code = {
+            index: 1,
+            c_code:c_code,
+            detailString:"请求保存数据"
+        };
+        socket.emit('code',code);//发送的是一个对象,这个对象有一个成员叫做code
     });
 
     /*不调试,直接执行*/
     $("nav ul li:eq(3)").click(function()//eq()是从0开始计数的
     {
-        /*还没有编译*/
-        if(step == 1)
-        {
-            appendMessage(1,"还没有编译代码, 请编译后再执行");
-            return false;
-        }
-        else if(step == 2)
-        {
-            socket.emit('runProgram');
-            socket.on('runEnd',function(result){
-                appendMessage(1,result.runResult);
-            });
-        }
+        var code = {
+            index: 2,
+            c_code:cEditor.getValue(),
+            detailString:"请求执行代码"
+        };
+        socket.emit('code',code);
     });
+
     /*点击开始调试菜单*/
     $("nav ul li:eq(4)").click(function()//eq()是从0开始计数的
     {
-        /*还没有编译*/
-        if(step == 1)
-        {
-            appendMessage(1,"还没有编译代码, 请编译后进行调试");
-            return false;
-        }
-        else if(step == 2)
-        {
-            enableCommandWindow();
-            socket.emit('debug');
-            addBreakpointsListener();
-        }
+
+        enableCommandWindow();
+        addBreakpointsListener();
+        var debug = {
+          command:"start"
+        };
+        socket.emit('debug',debug);
     });
 
 
     /*下一步*/
     $('nav ul li:eq(5)').click(function()
     {
-        socket.emit('command',{com:"next"});
+        var debug = {
+            command: "next"
+        };
+            socket.emit('debug',debug);
+            appendCommand(debug.command);
     });
 
     /*执行到断点*/
     $('nav ul li:eq(6)').click(function()
     {
-        socket.emit("command",{com:"continue"});
+        var debug = {
+            command: "continue"
+        };
+        socket.emit('debug',debug);
+        appendCommand(debug.command);
     });
 
     /*停止调试*/
     $('nav ul li:eq(7)').click(function()
     {
 
-        socket.emit('stop',{com:"quit"});
+
     });
 
     /*获取输入命令,传到服务器*/
     $("#executeCommand").click(function()
     {
-        var com = $("#commandWindow").val();
-        if(com.length >0)
+        var debug = {
+            command: $("#commandWindow").val()
+        };
+        if(debug.command.length > 0)
         {
-            //alert(com);
-            socket.emit('command',{com:com});
-            appendCommand(com);
+            socket.emit('debug',debug);
+            appendCommand(debug.command);
         }
-    });
-
-    /*执行命令出错*/
-    socket.on('executeError',function(result)
-    {
-        console.log("1**"+result.commandResult);
-        var cmr = result.commandResult;
-        console.log("2**"+cmr);
-        cmr = cmr.replace(/No stack.\n/g,"");
-        console.log("3**"+cmr+"**"+cmr.length);
-        if(cmr == "")
-            return;
-        appendMessage(0,cmr.replace(/No stack./g,""));
-    });
-
-    /*正常执行命令*/
-    socket.on('executeSuccess',function(result)
-    {
-        highlightAline(result.commandResult);
-        appendMessage(2,result.commandResult);
     });
 });

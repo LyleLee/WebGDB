@@ -1,63 +1,85 @@
 body{
     background-color:lightgrey;
 }
+/*控制代码左右两边区域(代码和命令),他们要离顶部一定的距离才不会被导航栏挡住*/
 #holder{
     margin-top: 90px;
 }
+
+/*根据boostrap的提示写的响应式插入图片*/
 .img-responsive {
     display: inline-block;
     height: 25px;
     max-width: 100%;
 }
-#leftSide{
+
+/*控制右边区域,包含已经历史命令窗口,和提交保存按钮*/
+#rightSide{
     background-color: darkgray;
-    margin: 80px 0px 10px 40px;
-    float: left;
-}
-#historyCommand{
-    height: 400px;
+    margin: 80px 0px 10px 10px;
+    float: right;
+    max-height: 200px;
     width: 350px;
+}
+/*左边区域下的命令窗口大小*/
+#historyCommand{
+/*原来我是设置有长宽的,现在不设置了, 让输入命令时根据父元素的大小自己变化*/
 }
 
 #codeDiv
 {
-    margin: 80px 10px 10px 10px;
+    margin: 65px 10px 10px 10px;
     height: 550px;
-    width: 930px;
-    float: right;
+    width: 950px;
+    float: left;
 }
+#c-code{
 
+}
 .clear
 {
     overflow: auto;
 }
+
+/*这个是在代码编译或者执行调试的时候出现的窗口,位于代码区域下方*/
 #messageWindow
 {
-    height: 300px;
+    height: 260px;
     overflow: auto;
 }
+/*以下两格标签是为了显示提示信息时个性化*/
 .redFont{
     color: red;
 }
 .greenFont{
     color: green;
 }
+.blueFont{
+    color: blueviolet;
+}
+/*段落之间的间隔,因为boostrap里面会为短路设置行高,所以这里重写,在提示信息的时候用js修改为下面的值*/
 .pMargin
 {
     margin-bottom: 3px;
 }
+
+/*主要是为了显示服务器传回来的代码,只有使用这个标签, 代码中的大小于号才不会被转义*/
+
 pre{
     margin: 0px;
     padding: 1px;
 }
+
+
+/*下面主要是codemirror的个性化设置*/
 .breakpoints {width: .8em;}
 .breakpoint { color: #822; }
 .CodeMirror {
-    height: auto;
+    height: 350px;
     border: 1px solid #aaa;
 }
 .CodeMirror-scroll {
-    overflow-y: hidden;
+    overflow-y: auto;
     overflow-x: auto;
 }
 .lineBackground
