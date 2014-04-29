@@ -36,3 +36,7 @@ http://www.techques.com/question/1-10575343/CodeMirror---Is-it-possible-to-scrol
 
 
 
+别人也遇到了相同的问题
+http://stackoverflow.com/questions/15339379/node-js-spawning-a-child-process-interactively-with-separate-stdout-and-stderr-s
+http://stackoverflow.com/questions/19961193/nodejs-child-process-stdin-write-no-callback
+http://stackoverflow.com/questions/18849112/stream-child-process-output-in-flowing-mode

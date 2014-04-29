@@ -24,6 +24,7 @@ body{
 /*左边区域下的命令窗口大小*/
 #historyCommand{
 /*原来我是设置有长宽的,现在不设置了, 让输入命令时根据父元素的大小自己变化*/
+    max-height: 180px;
 }
 
 #codeDiv

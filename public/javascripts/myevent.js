@@ -40,38 +40,24 @@ function resizeWindow(divId)
     div.scrollTop=div.scrollHeight;
 };
 
-function clearWindow(divId)
-{
-    var div = document.getElementById(divId);
-    $(div).html("<p></p>");
-};
-
-
 
 
 function appendCommand(oneCommand)
 {
-    $("#historyCommand").append($("<p>"+oneCommand+"</p>"));
+    $("#historyCommand").append($("<p>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+" :"+oneCommand+"</p>"));
     resizeWindow("historyCommand");
 };
 
-/*在编译, 以及调试的时候,经常会有说你的某个文件...但是对于用户来说, 没有必要知道在服务器中的具体路径*/
-/*在这里还要针对where命令的输出
- * (gdb) where
- * #0  main () at /home/lyle/WebstormProjects/web4/hello.c:10
- * 得到当前的行号
- * 这个办法还比较笨, 虽然可用,但是有待改进
- * */
-function highlightAline(message)
+function highlightAline(status)
 {
     //#0  main () at /home/lyle/WebstormProjects/web4/hello.c:10
-    var matchWhere = message.match(/\#\d+  \w* \(\) at \/home\/lyle\/WebstormProjects\/web4\/hello.c\:\d+/g);
+    var matchWhere = status.gdbOutput.match(/\#\d+  \w* \(\) at \/home\/lyle\/WebstormProjects\/web4\/hello.c\:\d+/g);
     /*这里通过分析gdb的输出,判断是不是where命令的输出, 如果是,那么就得到了当前的行号*/
 
     if(matchWhere !=null)
     {
         cEditor.removeLineClass(currentLine-1, 'background', 'lineBackground');//代码编辑器好像是从0开始的, 虽然外观上显示的是1
-        currentLine = parseInt(message.split(":")[1],10);
+        currentLine = parseInt(status.gdbOutput.split(":")[1],10);
         cEditor.addLineClass(currentLine-1, 'background', 'lineBackground');
         //    alert("currentLine"+currentLine);
     }
@@ -85,7 +71,7 @@ function appendMessage(status)
     $lineParent.addClass("pMargin");
 
     var lineString = "";
-   // var $lineChild = $("<pre>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+lineString+"</pre>");
+    // var $lineChild = $("<pre>"+(new Date()).Format("yyyy-MM-dd hh:mm:ss")+":\t"+lineString+"</pre>");
     var $linePre = $("<pre></pre>");
     if(status.index == 0)
     {
@@ -112,6 +98,7 @@ function appendMessage(status)
     {
         lineString = status.gdbOutput;
         $linePre.addClass('blueFont');
+        highlightAline(status);
     }
     else if(status.index == 5)
     {
@@ -120,19 +107,41 @@ function appendMessage(status)
     }
     else if(status.index == 6)
     {
-       alert("没有定义");
+        alert("没有定义");
     }
     else if(status.index == 7)
     {
         lineString = status.runResult;
         $linePre.addClass('greenFont');
     }
-    lineString = (new Date()).Format("yyyy-MM-dd hh:mm:ss") +" :"+lineString;
+    /*去除(gdb)*/
+    lineString = lineString.replace(/\n*\(gdb\)\s*/g,"");
+
+    /*去除No stack.*/
+    lineString = lineString.replace(/^No stack\.\s*$/g,"");
+
+    /*去除自动执行的where命令的输出
+     * #0  main () at /home/lyle/WebstormProjects/web4/hello.c:10*/
+    lineString = lineString.replace(/\s*\#\d+  \w* \(\) at \/home\/lyle\/WebstormProjects\/web4\/hello.c\:\d+\s*/g,"");
+
+    if(lineString.length <=1)
+    {
+        return;
+    }
+
     $linePre.text(lineString);
     $lineParent.append($linePre);
     $("#messageWindow").append($lineParent);
     resizeWindow('messageWindow');
 };
+
+function percessCommand(debug)
+{
+    appendCommand(debug.command);
+    socket.emit('debug',debug);
+    setTimeout(function(){
+        socket.emit('debug',{command:"where"});},200);
+}
 
 function enableCommandWindow()
 {
@@ -180,7 +189,6 @@ function addBreakpointsListener()
 
 $(document).ready(function()
 {
-
     socket.on('status',function(status){
         console.log(status);
         appendMessage(status);
@@ -215,7 +223,7 @@ $(document).ready(function()
         enableCommandWindow();
         addBreakpointsListener();
         var debug = {
-          command:"start"
+            command:"start"
         };
         socket.emit('debug',debug);
     });
@@ -227,25 +235,24 @@ $(document).ready(function()
         var debug = {
             command: "next"
         };
-            socket.emit('debug',debug);
-            appendCommand(debug.command);
+        percessCommand(debug);
     });
-
     /*执行到断点*/
     $('nav ul li:eq(6)').click(function()
     {
         var debug = {
             command: "continue"
         };
-        socket.emit('debug',debug);
-        appendCommand(debug.command);
+        percessCommand(debug);
     });
 
     /*停止调试*/
     $('nav ul li:eq(7)').click(function()
     {
-
-
+        var debug = {
+            command: "quit"
+        };
+        percessCommand(debug);
     });
 
     /*获取输入命令,传到服务器*/
@@ -256,8 +263,7 @@ $(document).ready(function()
         };
         if(debug.command.length > 0)
         {
-            socket.emit('debug',debug);
-            appendCommand(debug.command);
+            percessCommand(debug);
         }
     });
 });
